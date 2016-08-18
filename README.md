@@ -58,8 +58,11 @@ var coords = {
 	}
 }
 
-// CREACIÓN DEL OBJETO Y GRÁFICO
-// -----------------------------
+```
+
+Lo creamos como un objeto y le pasamos las coordenadas. Luego cargamos los métodos que necesitemos.
+
+```sh
 var miGrafico = new MansoGrafico(coords);
 miGrafico.crearPuntos();
 miGrafico.crearRangoGeneral();
@@ -71,9 +74,8 @@ miGrafico.traerFechas();
 
 ```
 
-
 Demo del Gráfico
 ---------------------
-[http://cajonarium.cl/github/manso-grafico/](http://http://cajonarium.cl/github/manso-grafico/)
+[http://cajonarium.cl/github/manso-grafico/](http://cajonarium.cl/github/manso-grafico/)
 
 Espero que les sirva.
