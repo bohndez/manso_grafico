@@ -1,9 +1,51 @@
+// AJAX EFRA
+// ---------
+// var coords;
+
+// function miAjax(){
+// 	var ajaxurl = $('#select_avances').attr('action');
+// 	var data    = $('#select_avances').serialize();
+// 	var http    = $('#select_avances').find('[name=_wp_http_referer]').val();
+// 	$.ajax({
+// 		type: 'POST',
+// 		dataType: 'json',
+// 		url: ajaxurl+'?action=AvancesJson',
+// 		data: data,
+// 		success: function(data){
+// 			coords = data;
+// 		}
+// 	});
+// 	return false;
+// }
+// miAjax();
+
+// $('#select_avances').on('change', function(e){
+// 	e.preventDefault();
+// 	miAjax();
+//   	return false;
+// });
+
 // CONSTRUCTOR DEL GRÁFICO
 // -----------------------
 function MansoGrafico(coords){
 	var self              = this;
 	// Div del grafico.
 	this.grafico          = document.getElementById('grafico');
+	this.grafico.innerHTML = '<div id="grafico">' +
+						'<div class="rango_normal">'+
+							'<p class="">RANGO NORMAL</p>'+
+						'</div>'+
+						'<div class="numeros">'+
+							'<span>kg/m</span>'+
+						'</div>'+
+						'<div class="indice">'+
+							'<div class="cont_tri"></div>'+
+							'<div class="cont_puntos"></div>'+
+						'</div>'+
+					'</div><!-- /grafico -->'+
+					'<div class="cont_fechas">'+
+						'<div class="fechas"></div>'+
+					'</div>'
 	// Sección donde van los puntos del gráfico.
 	this.indice           = document.getElementById('grafico').getElementsByClassName('indice')[0];
 	// Sección donde van los números del gráfico.
@@ -99,12 +141,8 @@ function MansoGrafico(coords){
 		var ranMin    = coords.rango_general.min;
 
 		for(tri in coords.evaluaciones){
-			console.log(coords.evaluaciones[tri].y);
-
 			lasCoor += distancia + ',' + (alto - ((coords.evaluaciones[tri].y * 4) - ((ranMin*4)-20))) + ' ';
-
 			distancia = distancia + this.separacionPuntos;
-
 			cont++;
 		}
 
@@ -116,7 +154,6 @@ function MansoGrafico(coords){
 				'<polyline fill="none" stroke="#000" stroke-width="2" stroke-miterlimit="10" points="'+lasCoor+'"/>' +
 			'</svg>'+
 		'</div>';
-		console.log(lasCoor);
 	}
 
 	// TOOLTIP VALOR DEL PUNTO
@@ -141,12 +178,9 @@ function MansoGrafico(coords){
 				// Sabiendo si tiene o no la clase le saco la clase de animación o se la pongo.
 				if( tiene ){
 					this.getElementsByClassName('valorPunto')[0].classList.remove('animOculto');
-					console.log('si tiene');
 				}else{
 					this.getElementsByClassName('valorPunto')[0].classList.add('animOculto');
-					console.log('no tiene');
 				}
-
 			});
 		}
 	}
@@ -156,9 +190,7 @@ function MansoGrafico(coords){
 		for(var i in coords.evaluaciones){
 			cont++;
 			this.contFechas.innerHTML += '<span style="width:'+this.separacionPuntos+'px; left:'+this.separacionPuntos*cont+'px">'+coords.evaluaciones[i].fecha+'</span>';
-			
 		}
-
 		this.contFechas.style.width = (this.separacionPuntos * cont)+this.separacionPuntos+'px';
 	}
 
@@ -209,21 +241,35 @@ function MansoGrafico(coords){
 		var anchoGrafico = this.grafico.offsetWidth;
 		var anchoIndice  = this.indice.offsetWidth;
 		var anchoTotal   = (anchoIndice - anchoGrafico) * -1;
+		var fechas 		 = document.getElementsByClassName('fechas')[0];
+		var moviendo     = false;
+		var movil        = 'ontouchstart' in window;
 
-		// if ('ontouchstart' in window) {
-		// 	empieza  = 'touchstart';
-		// 	mientras = 'touchmove';
-		// 	termina  = 'touchend';
-		// }else{
-		// 	empieza  = 'mousedown';
-		// 	mientras = 'mousemove';
-		// 	termina  = 'mouseup';
-		// }
+		self.indice.style.left = anchoTotal+'px';
+		fechas.style.left = anchoTotal+'px';
+
+		if (movil) {
+			empieza  = 'touchstart';
+			mientras = 'touchmove';
+			termina  = 'touchend';
+		}else{ 
+			empieza  = 'mousedown';
+			mientras = 'mousemove';
+			termina  = 'mouseup';
+		}
 
 		// Comienzo a arrastrar
-		this.indice.addEventListener('touchstart', function(event){
+		this.indice.addEventListener(empieza, function(event){
+			moviendo = true;
+
+		// this.indice.addEventListener('touchstart', function(event){
 			// Posición del evento cuando inicia.
-			posicionEInicio = event.touches[0].clientX;
+			
+			if (movil) {
+				posicionEInicio = event.touches[0].clientX;
+			}else{ 
+				posicionEInicio = event.clientX;
+			}
 
 			// Saco la posición del div "indice" cuando inicia el evento.
 			posicionIndice = self.indicePosicion();
@@ -231,25 +277,35 @@ function MansoGrafico(coords){
 		});
 
 		// Mientras arrastro
-		this.indice.addEventListener('touchmove', function(event){
-			// Posición actual del evento.
-			posicionEActual = event.touches[0].clientX;
+		this.indice.addEventListener(mientras, function(event){
+		// this.indice.addEventListener('touchmove', function(event){
+			if (moviendo) {
+				// Posición actual del evento.
+				
+				// 
+				if (movil) {
+					posicionEActual = event.touches[0].clientX;
+				}else{ 
+					posicionEActual = event.clientX;
+				}
 
-			// Cuánto se ha movido el evento.
-			movido = posicionEActual - posicionEInicio;
-			// console.log((posicionIndice + movido)+ 'px');
+				// Cuánto se ha movido el evento.
+				movido = posicionEActual - posicionEInicio;
+				// console.log((posicionIndice + movido)+ 'px');
 
-			if ((posicionIndice + movido)< 0 && posicionIndice + movido > anchoTotal) {
-				// Pongo la posición al div "indice".
-				self.indice.style.left = (posicionIndice + movido)+ 'px';
-				document.getElementsByClassName('fechas')[0].style.left = (posicionIndice + movido)+ 'px';
+				if ((posicionIndice+movido) < 0 && posicionIndice+movido > anchoTotal) {
+					// Pongo la posición al div "indice".
+					self.indice.style.left = (posicionIndice + movido)+ 'px';
+					fechas.style.left = (posicionIndice + movido)+ 'px';
 
+				}
 			}
 		});
-
 		// Finalizo de arrastrar.
-		this.indice.addEventListener('touchend', function(event){
+		this.indice.addEventListener(termina, function(event){
+		// this.indice.addEventListener('touchend', function(event){
 			// self.indice.style.left = (posicionIndice + movido)+ 'px';
+			moviendo = false;
 		});
 	}
 }
