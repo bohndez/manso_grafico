@@ -1,51 +1,9 @@
-// AJAX EFRA
-// ---------
-// var coords;
-
-// function miAjax(){
-// 	var ajaxurl = $('#select_avances').attr('action');
-// 	var data    = $('#select_avances').serialize();
-// 	var http    = $('#select_avances').find('[name=_wp_http_referer]').val();
-// 	$.ajax({
-// 		type: 'POST',
-// 		dataType: 'json',
-// 		url: ajaxurl+'?action=AvancesJson',
-// 		data: data,
-// 		success: function(data){
-// 			coords = data;
-// 		}
-// 	});
-// 	return false;
-// }
-// miAjax();
-
-// $('#select_avances').on('change', function(e){
-// 	e.preventDefault();
-// 	miAjax();
-//   	return false;
-// });
-
 // CONSTRUCTOR DEL GRÁFICO
 // -----------------------
 function MansoGrafico(coords){
 	var self              = this;
 	// Div del grafico.
 	this.grafico          = document.getElementById('grafico');
-	this.grafico.innerHTML = '<div id="grafico">' +
-						'<div class="rango_normal">'+
-							'<p class="">RANGO NORMAL</p>'+
-						'</div>'+
-						'<div class="numeros">'+
-							'<span>kg/m</span>'+
-						'</div>'+
-						'<div class="indice">'+
-							'<div class="cont_tri"></div>'+
-							'<div class="cont_puntos"></div>'+
-						'</div>'+
-					'</div><!-- /grafico -->'+
-					'<div class="cont_fechas">'+
-						'<div class="fechas"></div>'+
-					'</div>'
 	// Sección donde van los puntos del gráfico.
 	this.indice           = document.getElementById('grafico').getElementsByClassName('indice')[0];
 	// Sección donde van los números del gráfico.
